@@ -1,40 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
-import bb from "./utils/bb.png";
 import axios from "axios";
-import request from "./utils/request";
+import Header from "./Header";
+import CharacterGrid from "./characters/CharacterGrid";
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      characters: [],
+const App = () => {
+  const [characters, setCharacters] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const result = await axios(
+        `https://www.breakingbadapi.com/api/characters`
+      );
+      console.log(result.data);
+      setCharacters(result.data);
     };
-  }
-
-  componentDidMount() {
-    axios
-      .get("https://www.breakingbadapi.com/api/characters")
-      .then((response) => {
-        const data = response.data;
-        this.setState(() => (this.state.characters = data));
-        console.log(this.state.characters);
-      });
-  }
-  render() {
-    return (
-      <div className="App">
-        <img src={bb} />
-        <div className="container">
-          {this.state.characters.map((character) => (
-            <div key={character.char_id}>
-              <img className="img-character" src={character.img} />
-              <h2>{character.name}</h2>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-}
+    fetchItems();
+  }, []);
+  return (
+    <div className="container">
+      <Header />
+      <CharacterGrid characters={characters} />
+    </div>
+  );
+};
 export default App;
